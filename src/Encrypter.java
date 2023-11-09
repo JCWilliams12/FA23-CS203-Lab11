@@ -1,6 +1,11 @@
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 public class Encrypter {
@@ -33,7 +38,20 @@ public class Encrypter {
      * @throws Exception if an error occurs while reading or writing the files
      */
     public void encrypt(String inputFilePath, String encryptedFilePath) throws Exception {
-        //TODO: Call the read method, encrypt the file contents, and then write to new file
+    	//TODO: Call the read method, encrypt the file contents, and then write to new file
+    	String message = readFile(inputFilePath);
+    	String finalmessage = "";
+
+    	List<String> ALPHABET = Arrays.asList("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z");
+    	//https://www.geeksforgeeks.org/initializing-a-list-in-java/ for list initialization
+    	for(int i=0; i<message.length(); i++) {
+    		if(Character.isLetter(message.charAt(i))) {
+    			finalmessage = finalmessage + ALPHABET.get((ALPHABET.indexOf(Character.toString(Character.toUpperCase(message.charAt(i)))) + shift)%26);
+    		} else {
+    		finalmessage = finalmessage + message.charAt(i);
+    		}
+    	}
+    	writeFile(finalmessage, encryptedFilePath);
     }
 
     /**
@@ -45,7 +63,21 @@ public class Encrypter {
      */
     public void decrypt(String messageFilePath, String decryptedFilePath) throws Exception {
         //TODO: Call the read method, decrypt the file contents, and then write to new file
+    	String message = readFile(messageFilePath);
+    	String finalmessage = "";
+
+    	List<String> ALPHABET = Arrays.asList("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z");
+    	//https://www.geeksforgeeks.org/initializing-a-list-in-java/ for list initialization
+    	for(int i=0; i<message.length(); i++) {
+    		if(Character.isLetter(message.charAt(i))) {
+    			finalmessage = finalmessage + ALPHABET.get((ALPHABET.indexOf(Character.toString(Character.toUpperCase(message.charAt(i)))) + 22)%26);
+    		} else {
+    		finalmessage = finalmessage + message.charAt(i);
+    		}
+    	}
+    	writeFile(finalmessage, decryptedFilePath);
     }
+    
 
     /**
      * Reads the content of a file and returns it as a string.
@@ -56,7 +88,14 @@ public class Encrypter {
      */
     private static String readFile(String filePath) throws Exception {
         String message = "";
-        //TODO: Read file from filePath
+        try(Scanner fileScanner = new Scanner(Paths.get(filePath))){
+        	while(fileScanner.hasNextLine()) {
+        		message = message + fileScanner.nextLine() + "\n";
+        	}
+        	fileScanner.close();
+        } catch(Exception e) {
+        	System.out.print("Error: " + e.toString());
+        }
         return message;
     }
 
@@ -68,6 +107,12 @@ public class Encrypter {
      */
     private static void writeFile(String data, String filePath) {
         //TODO: Write to filePath
+    	try(PrintWriter output = new PrintWriter(filePath)){
+    		output.print(data);
+    		output.close();
+    	}catch(Exception e) {
+    		System.out.println("Error: " + e.toString());
+    	}
     }
 
     /**
